@@ -7,17 +7,18 @@ using System.Threading.Tasks;
 
 namespace Task2.GenericSet
 {
-    public class Set<T> : IEnumerable<T>, IEnumerable where T : class
+    public class Set<T> : IEnumerable<T> where T : class, IEquatable<T>
     {
         #region Private Fields
         private IEqualityComparer<T> comparer;
         private int count;
-        private List<T> collection;
+        private T[] collection;
         #endregion
 
         #region Properties
         public IEqualityComparer<T> Comparer { get { return this.comparer; } }
-        public int Count { get { return this.count; } }
+        public int Count { get { return this.count; } private set { count = value; } }
+        public int Capacity => collection.Length;
         #endregion
 
         #region Constructors
@@ -32,7 +33,7 @@ namespace Task2.GenericSet
 
             this.count = 0;
             this.comparer = comparer;
-            this.collection = new List<T>();
+            this.collection = new T[10];
         }
 
         public Set (IEnumerable<T> collection, IEqualityComparer<T> comparer) : this(comparer)
@@ -51,10 +52,12 @@ namespace Task2.GenericSet
             if (ReferenceEquals(item, null))
                 throw new ArgumentNullException(nameof(item));
 
+            if (Count == Capacity)
+                SetCapacity(Capacity * 2);
+
             if (!Contains(item))
             {
-                this.collection.Add(item);
-                this.count = this.collection.Count();
+                collection[Count++] = item;
                 return true;
             }
             else return false;
@@ -63,7 +66,7 @@ namespace Task2.GenericSet
 
         public void Clear()
         {
-            this.collection.Clear();
+            Array.Clear(collection,0,Count);
             this.count = 0;
         }
 
@@ -73,8 +76,13 @@ namespace Task2.GenericSet
                 throw new ArgumentNullException(nameof(item));
             if (Contains(item))
             {
-                this.collection.Remove(item);
-                return true;
+                for (int i = 0; i < Count; i++)
+                    if (comparer.Equals(collection[i], item))
+                    {
+                        Array.ConstrainedCopy(collection, i + 1, collection, i, Count - i - 1);
+                        Count--;
+                        return true;
+                    }
             }
             return false;
         }
@@ -98,10 +106,14 @@ namespace Task2.GenericSet
             if (ReferenceEquals(array, null))
                 throw new ArgumentNullException(nameof(array));
 
-            this.collection.CopyTo(array);
+            Array.ConstrainedCopy(collection, 0, array, 0, Count);
         }
 
-        public IEnumerator<T> GetEnumerator() => ((IEnumerable<T>)collection).GetEnumerator();
+        public IEnumerator<T> GetEnumerator()
+        {
+            foreach (var element in collection)
+                yield return element;
+        }
 
         public void UnionWith(IEnumerable<T> other)
         {
@@ -118,6 +130,7 @@ namespace Task2.GenericSet
         #endregion
 
         #region Private Members
+        private void SetCapacity(int capacity) => Array.Resize(ref collection, capacity);
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         #endregion
     }

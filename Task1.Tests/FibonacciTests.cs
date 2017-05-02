@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using static Task1.Fibonacci.Fibonacci;
@@ -11,21 +12,30 @@ namespace Task1.Tests
     [TestFixture]
     public class FibonacciTests
     {
-        
-        [TestCase(1, ExpectedResult = new int[] {0})]
-        [TestCase(2, ExpectedResult = new int[] { 0, 1})]
-        [TestCase(3, ExpectedResult = new int[] { 0, 1, 1})]
-        [TestCase(11, ExpectedResult = new int[] { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55})]
-        [TestCase(22, ExpectedResult = new int[] { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946})]
-        public IEnumerable<int>  GetFibonacciSequence_PositiveTest(int amount)
+
+        private static IEnumerable<TestCaseData> TestDatas
         {
-           return GetFibonacciSequence(amount);
+            get
+            {
+                yield return new TestCaseData(1, new BigInteger[] { 0 });
+                yield return new TestCaseData(2, new BigInteger[] { 0, 1 });
+                yield return new TestCaseData(3, new BigInteger[] { 0, 1, 1 });
+                yield return new TestCaseData(11, new BigInteger[] { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 });
+                yield return new TestCaseData(22, new BigInteger[] { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946 });
+            }
+                    
         }
 
-        //[TestCase(-1)]
-        //public void GetFibonacciSequence_ThrowsArgumentException(int amount)
-        //{
-        //    Assert.Throws<ArgumentException>(() => GetFibonacciSequence(amount));
-        //}
+        [TestCaseSource(nameof(TestDatas))]
+        public void  GetFibonacciSequence_PositiveTest(BigInteger amount, BigInteger[] result)
+        {
+            Assert.AreEqual((GetFibonacciSequence(amount)), result);
+        }
+
+        [TestCase(-1)]
+        public void GetFibonacciSequence_ThrowsArgumentException(BigInteger amount)
+        {
+            Assert.Throws<ArgumentException>(() => GetFibonacciSequence(amount));
+        }
     }
 }

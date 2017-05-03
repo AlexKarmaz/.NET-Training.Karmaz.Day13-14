@@ -9,7 +9,7 @@ namespace Task5.BinaryTree
 {
     public class BinarySearchTree<T> : IEnumerable<T>
     {
-        public class Node<TValue>
+        private class Node<TValue>
         {
             public TValue Value { get; }
             public Node<TValue> LeftNode { get; set; }
@@ -26,17 +26,25 @@ namespace Task5.BinaryTree
         private Node<T> root;
 
         #region Properties
-        public IComparer<T> Comparer { get; set; }
+        private IComparer<T> Comparer { get; set; }
         public int Count { get; private set; }
         #endregion
 
         #region Constructors
         public BinarySearchTree() : this(Comparer<T>.Default) { }
 
+        public BinarySearchTree(Comparison<T> comparison) : this(Comparer<T>.Create(comparison)) { }
+
+        public BinarySearchTree(IEnumerable<T> collection, Comparison<T> comparison) : this(collection, Comparer<T>.Create(comparison)) { }
+        
+
         public BinarySearchTree(IComparer<T> comparer)
         {
             if (ReferenceEquals(comparer, null))
                 throw new ArgumentNullException(nameof(comparer));
+
+            if ((!typeof(T).GetInterfaces().Contains(typeof(IComparable<T>)) || !typeof(T).GetInterfaces().Contains(typeof(IComparable))) && ReferenceEquals(comparer, Comparer<T>.Default))
+                throw new ArgumentException("The type is not implement interfaces IComparable<T> or IComparable ");
 
             Comparer = comparer;
         }
@@ -95,7 +103,7 @@ namespace Task5.BinaryTree
             Count = 0;
         }
 
-        public Node<T> Find(T item)
+        private Node<T> Find(T item)
         {
             if (ReferenceEquals(item, null))
                 throw new ArgumentNullException(nameof(item));

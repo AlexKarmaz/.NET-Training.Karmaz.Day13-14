@@ -101,6 +101,12 @@ namespace Task5.Tests
             Assert.AreEqual(tree.MaxValue(), result);
         }
 
+        [Test]
+        public void MaxValue_Point2DDefault_ArgumentException()
+        {
+     
+            Assert.Throws<ArgumentException>(() => new BinarySearchTree<Point2D>(new Point2D[] { new Point2D(10, 10), new Point2D(1, 8), new Point2D(5, 20), new Point2D(8, 20) }));
+        }
     }
 
     public class Int32Comparer : IComparer<int>

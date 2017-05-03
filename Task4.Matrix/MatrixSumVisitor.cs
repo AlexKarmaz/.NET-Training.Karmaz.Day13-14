@@ -10,7 +10,8 @@ namespace Task4.Matrix
     public class MatrixSumVisitor<T> : IMatrixVisitor<T>
     {
         #region Public Members
-        public SquareMatrix<T> Result { get; private set; }
+        public Matrix<T> Result { get; private set; }
+
         public void Visit(SquareMatrix<T> matrix, Matrix<T> addMatrix)
         {
             if (matrix == null)
@@ -58,7 +59,8 @@ namespace Task4.Matrix
                 for (int i = 0; i < firstMatrix.Size; i++)
                     for (int j = 0; j < firstMatrix.Size; j++)
                     {
-                        Result[i, j] = (dynamic)firstMatrix[i, j] + secondMatrix[i, j];
+                        // Result[i, j] = (dynamic)firstMatrix[i, j] + secondMatrix[i, j];
+                        Result[i, j] = AddMatrixHelper<T>.Add(firstMatrix[i, j], secondMatrix[i, j]);
                     }
             }
             catch (InvalidOperationException ex)
@@ -67,5 +69,22 @@ namespace Task4.Matrix
 
             }
         }
+    }
+
+    public static class AddMatrixHelper<T>
+    {
+
+        private static readonly Func<T, T, T> matrixAdd;
+
+        static AddMatrixHelper()
+        {
+            ParameterExpression paramA = Expression.Parameter(typeof(T), "lhs");
+            ParameterExpression paramB = Expression.Parameter(typeof(T), "rhs");
+
+            BinaryExpression body = Expression.Add(paramA, paramB);
+            matrixAdd = Expression.Lambda<Func<T, T, T>>(body, paramA, paramB).Compile();
+        }
+
+        public static T Add(T lhs, T rhs) => matrixAdd(lhs, rhs);
     }
 }

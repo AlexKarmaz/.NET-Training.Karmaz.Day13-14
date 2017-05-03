@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Task4.Matrix
 {
-    public abstract class Matrix<T> : IEquatable<Matrix<T>>
+    public abstract class Matrix<T> : IEquatable<Matrix<T>>, IEnumerable<T>
     {
         #region Public members
         public event EventHandler<MatrixEventArgs> Update = delegate { };
@@ -52,11 +53,12 @@ namespace Task4.Matrix
             if (ReferenceEquals(this, other))
                 return true;
 
-            return Size == other.Size && DeepEquals(other);
+            return Size == other.Size && EqualsByIndexator(other);
         }
 
         public abstract T GetValue(int i, int j);
         public abstract void SetValue(int i, int j, T value);
+        public abstract IEnumerator<T> GetEnumerator();
         #endregion
 
         #region Overridden System.Object methods
@@ -69,8 +71,10 @@ namespace Task4.Matrix
 
             if (obj.GetType() != GetType() && !obj.GetType().IsSubclassOf(typeof(Matrix<T>)))
                 return false;
-            return DeepEquals((Matrix<T>)obj);
+            return EqualsByIndexator((Matrix<T>)obj);
         }
+
+        public override abstract int GetHashCode();
 
         public override string ToString()
         {
@@ -89,7 +93,7 @@ namespace Task4.Matrix
         #endregion
 
         #region Protected methods
-        protected bool DeepEquals(Matrix<T> other)
+        protected bool EqualsByIndexator(Matrix<T> other)
         {
             if (ReferenceEquals(other, null))
                 throw new ArgumentNullException(nameof(other));
@@ -108,5 +112,7 @@ namespace Task4.Matrix
             update?.Invoke(sender, e);
         }
         #endregion
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

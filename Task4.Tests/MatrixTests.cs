@@ -47,7 +47,7 @@ namespace Task4.Tests
         }
 
         [TestCaseSource("GetEnumeratorDatas")]
-        public static int GetEnumerator_PositiveTest(SquareMatrix<int> matrix)
+        public static int GetEnumerator_PositiveTest(Matrix<int> matrix)
         {
             int i = 0;
             foreach (var item in matrix)

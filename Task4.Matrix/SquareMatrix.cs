@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Task4.Matrix
 {
-    public class SquareMatrix<T> : Matrix<T>, IEnumerable<T>, IEnumerable
+    public class SquareMatrix<T> : Matrix<T>
     {
-        protected  T[,] array;
+        private  T[,] array;
 
         #region Constructors
         public SquareMatrix()
@@ -51,7 +51,7 @@ namespace Task4.Matrix
         #endregion
 
         #region Public Methods
-        public IEnumerator<T> GetEnumerator()
+        public override IEnumerator<T> GetEnumerator()
         {
             for (int i = 0; i < Size; i++)
                 for (int j = 0; j < Size; j++)
@@ -79,10 +79,8 @@ namespace Task4.Matrix
 
             array[i, j] = value;
         }
-        #endregion
 
-        #region Private Methods
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public override int GetHashCode() => array?.GetHashCode() ?? 0;
         #endregion
     }
 }

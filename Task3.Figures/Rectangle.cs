@@ -27,7 +27,7 @@ namespace Task3.Figures
         }
 
         
-        //double CalculatePerimeter() { return 2*(this.Width + this.Height); }
+        double CalculatePerimeter() { return 2*(this.Width + this.Height); }
 
 
     }

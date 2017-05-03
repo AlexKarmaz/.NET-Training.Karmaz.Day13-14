@@ -25,7 +25,7 @@ namespace Task4.Tests
         [TestCaseSource(nameof(TestDatas))]
         public void Add_PositiveTest(Matrix<int> firstMatrix, Matrix<int> secondMatrix, Matrix<int> resultMatrix)
         {
-            SquareMatrix<int> result = firstMatrix.Add(secondMatrix);
+            Matrix<int> result = firstMatrix.Add(secondMatrix);
 
             Assert.AreEqual(resultMatrix.Equals(result), true);
         }
